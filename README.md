@@ -1,6 +1,6 @@
 # Event Manager Kotlin
 
-Native Android implementation of the COMP1786 CW2 Event Manager admin app. It is written in Kotlin with Jetpack Compose and stores data locally with Room (SQLite).
+Native Android implementation of the COMP1786 CW2 Event Manager admin app. It is written in Kotlin with Jetpack Compose and stores data locally with Room (SQLite). This project also includes a separate Java BMI Calculator app for Exercise 1.
 
 ## Implemented features
 
@@ -21,7 +21,7 @@ Native Android implementation of the COMP1786 CW2 Event Manager admin app. It is
 1. Open this `EventManagerKotlin` folder in Android Studio.
 2. Let Android Studio install Android SDK 35 and sync the Gradle project.
 3. Select an emulator or an Android device running Android 8.0 (API 26) or newer.
-4. Run the `app` configuration.
+4. Run the `app` configuration for Event Manager, or `bmiapp` for the Exercise 1 BMI Calculator.
 
 From a terminal with `ANDROID_HOME` configured, use:
 
@@ -30,7 +30,11 @@ From a terminal with `ANDROID_HOME` configured, use:
 ./gradlew assembleDebug
 ```
 
-The debug APK is generated at `app/build/outputs/apk/debug/app-debug.apk`.
+The Event Manager debug APK is generated at `app/build/outputs/apk/debug/app-debug.apk`. The BMI Calculator APK is generated at `bmiapp/build/outputs/apk/debug/bmiapp-debug.apk`.
+
+## Exercise 1 BMI Calculator
+
+The `bmiapp` module installs as a separate app. It accepts kilograms or pounds for weight and centimetres or metres for height, validates both values against reasonable ranges, calculates BMI, and shows the adult BMI category in both words and colour. The Java calculation class is unit-tested separately from the screen. On a borrowed computer, select the `bmiapp` run configuration, then capture screenshots of valid results in each unit and invalid-input messages for the Exercise 1 logbook.
 
 ## Cloud endpoint
 

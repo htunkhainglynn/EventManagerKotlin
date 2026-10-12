@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.BmiCalculator" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">#0C5A78</item>
+        <item name="android:statusBarColor">#FFFFFF</item>
+        <item name="android:navigationBarColor">#17212B</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">#FFFFFF</item>
+    </style>
+
+    <style name="TextAppearance.Bmi.Title" parent="android:style/TextAppearance.Material.Headline">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">28sp</item>
+    </style>
+    <style name="TextAppearance.Bmi.Body" parent="android:style/TextAppearance.Material.Body1">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="TextAppearance.Bmi.FieldLabel" parent="android:style/TextAppearance.Material.Body1">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="TextAppearance.Bmi.Result" parent="android:style/TextAppearance.Material.Headline">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">38sp</item>
+    </style>
+    <style name="TextAppearance.Bmi.Category" parent="android:style/TextAppearance.Material.Title">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="TextAppearance.Bmi.Error" parent="android:style/TextAppearance.Material.Body1">
+        <item name="android:textColor">@color/input_error</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="TextAppearance.Bmi.Note" parent="android:style/TextAppearance.Material.Caption">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+</resources>

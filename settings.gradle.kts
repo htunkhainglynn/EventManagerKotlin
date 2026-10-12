@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "EventManagerKotlin"
 include(":app")
+include(":bmiapp")

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BMI Calculator</string>
+    <string name="screen_title">BMI Calculator</string>
+    <string name="screen_intro">Enter your weight and height to calculate adult body mass index.</string>
+    <string name="weight_label">Weight</string>
+    <string name="weight_hint">Weight, for example 70</string>
+    <string name="height_label">Height</string>
+    <string name="height_hint">Height, for example 175</string>
+    <string name="unit_kg">Kilograms (kg)</string>
+    <string name="unit_lb">Pounds (lb)</string>
+    <string name="unit_cm">Centimetres (cm)</string>
+    <string name="unit_m">Metres (m)</string>
+    <string name="calculate_button">Calculate BMI</string>
+    <string name="result_label">Your BMI</string>
+    <string name="category_underweight">Underweight</string>
+    <string name="category_healthy">Healthy weight</string>
+    <string name="category_overweight">Overweight</string>
+    <string name="category_obese">Obese</string>
+    <string name="band_underweight">Below 18.5</string>
+    <string name="band_healthy">18.5 to below 25</string>
+    <string name="band_overweight">25 to below 30</string>
+    <string name="band_obese">30 or above</string>
+    <string name="required_field">Please enter a value.</string>
+    <string name="valid_number">Enter a valid number, such as 70 or 70.5.</string>
+    <string name="weight_range_kg">Weight must be between 20 and 300 kg.</string>
+    <string name="weight_range_lb">Weight must be between 44 and 661 lb.</string>
+    <string name="height_range_cm">Height must be between 50 and 250 cm.</string>
+    <string name="height_range_m">Height must be between 0.50 and 2.50 m.</string>
+    <string name="correct_inputs">BMI was not calculated. Correct the highlighted fields and try again.</string>
+    <string name="bmi_disclaimer">BMI is a screening measure for adults, not a medical diagnosis.</string>
+</resources>
