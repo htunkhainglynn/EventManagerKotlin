@@ -80,4 +80,10 @@ The APK is created at `bmiapp/build/outputs/apk/debug/bmiapp-debug.apk`.
 - Flutter/Dart, Material 3, HTTP, shared preferences
 - Java Android Views for the BMI exercise
 
+## Screenshots
+
+| Attendee event list | Event details and schedule |
+| --- | --- |
+| ![Attendee event list](screenshots/attendee-event-list.jpg) | ![Event details and schedule](screenshots/attendee-event-detail.jpg) |
+
 No coursework report or generated PDF is included in this repository.

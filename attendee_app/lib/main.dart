@@ -404,7 +404,19 @@ class _EventDetailPageState extends State<EventDetailPage> {
             ...event.sessions.map(
               (session) => Card(
                 child: ListTile(
-                  leading: CircleAvatar(child: Text(session.time)),
+                  leading: Container(
+                    width: 52,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      session.time,
+                      maxLines: 1,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                  ),
                   title: Text(session.name),
                   subtitle: Text([
                     session.type,
