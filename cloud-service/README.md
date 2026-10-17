@@ -13,7 +13,7 @@ npm start
 The service listens on port `8080`, stores data in `data/events.json`, and exposes:
 
 - `GET /health`
-- `GET /api/events?name=&date=` for the attendee app
+- `GET /api/events?name=&date=` for the attendee app; dates use ISO `YYYY-MM-DD`
 - `PUT /api/events` for a complete admin synchronisation
 
 Set `ADMIN_API_KEY` to protect the write endpoint. The admin app sends the matching value from the Gradle property `EVENT_API_KEY`.

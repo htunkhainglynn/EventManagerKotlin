@@ -13,10 +13,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -34,6 +38,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
+import com.example.eventmanager.model.EventStatus
+import com.example.eventmanager.model.EventType
+import com.example.eventmanager.model.EventDateTime
 import com.example.eventmanager.model.Validation
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +54,8 @@ fun EventFormScreen(
     var draft by remember { mutableStateOf(EventDraft(id = eventId)) }
     var errors by remember { mutableStateOf(emptyMap<String, String>()) }
     var showConfirmation by remember { mutableStateOf(false) }
+    var typeMenuOpen by remember { mutableStateOf(false) }
+    var statusMenuOpen by remember { mutableStateOf(false) }
 
     LaunchedEffect(eventId) {
         if (eventId != 0L) {
@@ -57,6 +66,8 @@ fun EventFormScreen(
                     date = event.date,
                     organiser = event.organiser,
                     location = event.location,
+                    eventType = event.eventType,
+                    status = event.status,
                     description = event.description,
                     contactEmail = event.contactEmail,
                     contactPhone = event.contactPhone
@@ -118,11 +129,10 @@ fun EventFormScreen(
                 )
             }
             item {
-                FormField(
+                DatePickerField(
                     value = draft.date,
                     onValueChange = { draft = draft.copy(date = it); errors = errors - "date" },
-                    label = "Date *",
-                    placeholder = "DD/MM/YYYY",
+                    label = "Event date *",
                     error = errors["date"]
                 )
             }
@@ -133,6 +143,64 @@ fun EventFormScreen(
                     label = "Organiser *",
                     error = errors["organiser"]
                 )
+            }
+            item {
+                ExposedDropdownMenuBox(
+                    expanded = typeMenuOpen,
+                    onExpandedChange = { typeMenuOpen = !typeMenuOpen }
+                ) {
+                    OutlinedTextField(
+                        value = draft.eventType.label,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Event type *") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(typeMenuOpen) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
+                    )
+                    ExposedDropdownMenu(
+                        expanded = typeMenuOpen,
+                        onDismissRequest = { typeMenuOpen = false }
+                    ) {
+                        EventType.entries.forEach { type ->
+                            DropdownMenuItem(
+                                text = { Text(type.label) },
+                                onClick = {
+                                    draft = draft.copy(eventType = type)
+                                    typeMenuOpen = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            item {
+                ExposedDropdownMenuBox(
+                    expanded = statusMenuOpen,
+                    onExpandedChange = { statusMenuOpen = !statusMenuOpen }
+                ) {
+                    OutlinedTextField(
+                        value = draft.status.label,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Event status *") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(statusMenuOpen) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
+                    )
+                    ExposedDropdownMenu(
+                        expanded = statusMenuOpen,
+                        onDismissRequest = { statusMenuOpen = false }
+                    ) {
+                        EventStatus.entries.forEach { status ->
+                            DropdownMenuItem(
+                                text = { Text(status.label) },
+                                onClick = {
+                                    draft = draft.copy(status = status)
+                                    statusMenuOpen = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
             item {
                 FormField(
@@ -193,9 +261,11 @@ fun EventFormScreen(
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     ConfirmationRow("Name", draft.name)
-                    ConfirmationRow("Date", draft.date)
+                    ConfirmationRow("Date", draft.date?.let(EventDateTime::displayDate).orEmpty())
                     ConfirmationRow("Organiser", draft.organiser)
                     ConfirmationRow("Location", draft.location)
+                    ConfirmationRow("Type", draft.eventType.label)
+                    ConfirmationRow("Status", draft.status.label)
                     if (draft.description.isNotBlank()) ConfirmationRow("Description", draft.description)
                     if (draft.contactEmail.isNotBlank()) ConfirmationRow("Email", draft.contactEmail)
                     if (draft.contactPhone.isNotBlank()) ConfirmationRow("Phone", draft.contactPhone)

@@ -30,11 +30,11 @@ class EventApi {
   final http.Client _client;
 
   Future<List<EventInfo>> fetchEvents(
-      {String name = '', String date = ''}) async {
+      {String name = '', DateTime? date}) async {
     final base = Uri.parse(baseUrl);
     final query = <String, String>{
       if (name.trim().isNotEmpty) 'name': name.trim(),
-      if (date.trim().isNotEmpty) 'date': date.trim(),
+      if (date != null) 'date': _isoDate(date),
     };
     final uri = base.replace(queryParameters: query.isEmpty ? null : query);
 
@@ -63,3 +63,6 @@ class EventApi {
 
   void close() => _client.close();
 }
+
+String _isoDate(DateTime date) =>
+    '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';

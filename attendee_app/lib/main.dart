@@ -36,7 +36,7 @@ class EventBrowserPage extends StatefulWidget {
 class _EventBrowserPageState extends State<EventBrowserPage> {
   late final EventApi _api = widget.api ?? EventApi();
   final _nameController = TextEditingController();
-  final _dateController = TextEditingController();
+  DateTime? _selectedDate;
   List<EventInfo> _events = const [];
   Set<int> _favourites = const {};
   FavouritesStore? _favouritesStore;
@@ -68,7 +68,7 @@ class _EventBrowserPageState extends State<EventBrowserPage> {
     try {
       final events = await _api.fetchEvents(
         name: _nameController.text,
-        date: _dateController.text,
+        date: _selectedDate,
       );
       if (mounted) setState(() => _events = events);
     } on EventApiException catch (error) {
@@ -89,7 +89,6 @@ class _EventBrowserPageState extends State<EventBrowserPage> {
   void dispose() {
     _api.close();
     _nameController.dispose();
-    _dateController.dispose();
     super.dispose();
   }
 
@@ -124,12 +123,13 @@ class _EventBrowserPageState extends State<EventBrowserPage> {
             children: [
               _SearchPanel(
                 nameController: _nameController,
-                dateController: _dateController,
+                selectedDate: _selectedDate,
                 loading: _loading,
                 onSearch: _loadEvents,
+                onDateChanged: (date) => setState(() => _selectedDate = date),
                 onClear: () {
                   _nameController.clear();
-                  _dateController.clear();
+                  setState(() => _selectedDate = null);
                   _loadEvents();
                 },
               ),
@@ -207,16 +207,18 @@ class _EventBrowserPageState extends State<EventBrowserPage> {
 class _SearchPanel extends StatelessWidget {
   const _SearchPanel({
     required this.nameController,
-    required this.dateController,
+    required this.selectedDate,
     required this.loading,
     required this.onSearch,
+    required this.onDateChanged,
     required this.onClear,
   });
 
   final TextEditingController nameController;
-  final TextEditingController dateController;
+  final DateTime? selectedDate;
   final bool loading;
   final VoidCallback onSearch;
+  final ValueChanged<DateTime?> onDateChanged;
   final VoidCallback onClear;
 
   @override
@@ -239,16 +241,37 @@ class _SearchPanel extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            TextField(
-              controller: dateController,
-              keyboardType: TextInputType.datetime,
-              onSubmitted: (_) => onSearch(),
-              decoration: const InputDecoration(
-                labelText: 'Date',
-                hintText: 'DD/MM/YYYY',
-                prefixIcon: Icon(Icons.calendar_month),
+            OutlinedButton.icon(
+              onPressed: loading
+                  ? null
+                  : () async {
+                      final chosen = await showDatePicker(
+                        context: context,
+                        initialDate: selectedDate ?? DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (chosen != null) onDateChanged(chosen);
+                    },
+              icon: const Icon(Icons.calendar_month),
+              label: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  selectedDate == null
+                      ? 'Select event date'
+                      : _formatDate(selectedDate!),
+                ),
               ),
             ),
+            if (selectedDate != null)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: loading ? null : () => onDateChanged(null),
+                  icon: const Icon(Icons.close, size: 18),
+                  label: const Text('Clear date'),
+                ),
+              ),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -312,9 +335,11 @@ class _EventCard extends StatelessWidget {
                 ],
               ),
               const Divider(),
-              _Fact(icon: Icons.calendar_month, text: event.date),
+              _Fact(icon: Icons.calendar_month, text: event.formattedDate),
               _Fact(icon: Icons.location_on, text: event.location),
               _Fact(icon: Icons.groups, text: event.organiser),
+              _Fact(icon: Icons.category, text: event.eventType),
+              _Fact(icon: Icons.flag, text: event.status),
               const SizedBox(height: 8),
               Text(
                   '${event.sessions.length} session${event.sessions.length == 1 ? '' : 's'}'),
@@ -378,11 +403,13 @@ class _EventDetailPageState extends State<EventDetailPage> {
                   Text(event.name,
                       style: Theme.of(context).textTheme.headlineSmall),
                   const SizedBox(height: 12),
-                  _Fact(icon: Icons.calendar_month, text: event.date),
+                  _Fact(icon: Icons.calendar_month, text: event.formattedDate),
                   _Fact(icon: Icons.location_on, text: event.location),
                   _Fact(
                       icon: Icons.groups,
                       text: 'Organised by ${event.organiser}'),
+                  _Fact(icon: Icons.category, text: event.eventType),
+                  _Fact(icon: Icons.flag, text: event.status),
                   if (event.description.isNotEmpty) ...[
                     const Divider(),
                     Text(event.description),
@@ -412,7 +439,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      session.time,
+                      session.formattedTime,
                       maxLines: 1,
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
@@ -432,6 +459,9 @@ class _EventDetailPageState extends State<EventDetailPage> {
     );
   }
 }
+
+String _formatDate(DateTime date) =>
+    '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year.toString().padLeft(4, '0')}';
 
 class _Fact extends StatelessWidget {
   const _Fact({required this.icon, required this.text});

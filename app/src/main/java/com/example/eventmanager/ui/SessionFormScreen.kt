@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -32,16 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.eventmanager.model.SessionType
 import com.example.eventmanager.model.Validation
-
-private val sessionTypes = listOf(
-    "Workshop",
-    "Presentation",
-    "Panel Discussion",
-    "Networking",
-    "Keynote",
-    "Others"
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -110,11 +100,10 @@ fun SessionFormScreen(
                 )
             }
             item {
-                FormField(
+                TimePickerField(
                     value = draft.time,
                     onValueChange = { draft = draft.copy(time = it); errors = errors - "time" },
-                    label = "Time *",
-                    placeholder = "HH:mm",
+                    label = "Session time *",
                     error = errors["time"]
                 )
             }
@@ -124,7 +113,7 @@ fun SessionFormScreen(
                     onExpandedChange = { typeMenuOpen = !typeMenuOpen }
                 ) {
                     OutlinedTextField(
-                        value = draft.type,
+                        value = draft.type.label,
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("Session type") },
@@ -135,9 +124,9 @@ fun SessionFormScreen(
                         expanded = typeMenuOpen,
                         onDismissRequest = { typeMenuOpen = false }
                     ) {
-                        sessionTypes.forEach { type ->
+                        SessionType.entries.forEach { type ->
                             DropdownMenuItem(
-                                text = { Text(type) },
+                                text = { Text(type.label) },
                                 onClick = {
                                     draft = draft.copy(type = type)
                                     typeMenuOpen = false

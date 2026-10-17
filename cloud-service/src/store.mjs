@@ -9,6 +9,8 @@ const sessionTypes = new Set([
   "Keynote",
   "Others",
 ]);
+const eventTypes = new Set(["Conference", "Workshop", "Seminar", "Social", "Other"]);
+const eventStatuses = new Set(["Upcoming", "Completed", "Cancelled"]);
 
 function text(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -27,6 +29,26 @@ function timestamp(value) {
   return Number.isFinite(number) && number > 0 ? Math.trunc(number) : Date.now();
 }
 
+function isoDate(value, label) {
+  const candidate = text(value);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(candidate)) {
+    throw new ValidationError(`${label} must use YYYY-MM-DD`);
+  }
+  const parsed = new Date(`${candidate}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== candidate) {
+    throw new ValidationError(`${label} must be a real calendar date`);
+  }
+  return candidate;
+}
+
+function minutesAfterMidnight(value, label) {
+  const number = Number(value);
+  if (!Number.isSafeInteger(number) || number < 0 || number > 1439) {
+    throw new ValidationError(`${label} must be an integer from 0 to 1439`);
+  }
+  return number;
+}
+
 export class ValidationError extends Error {}
 
 export function normalizeEvents(input) {
@@ -41,9 +63,11 @@ export function normalizeEvents(input) {
     const event = {
       id: positiveId(rawEvent.id, `events[${eventIndex}].id`),
       name: text(rawEvent.name),
-      date: text(rawEvent.date),
+      date: isoDate(rawEvent.date, `events[${eventIndex}].date`),
       organiser: text(rawEvent.organiser),
       location: text(rawEvent.location),
+      eventType: text(rawEvent.eventType),
+      status: text(rawEvent.status),
       description: text(rawEvent.description),
       contactEmail: text(rawEvent.contactEmail),
       contactPhone: text(rawEvent.contactPhone),
@@ -55,6 +79,12 @@ export function normalizeEvents(input) {
       throw new ValidationError(
         `events[${eventIndex}] requires name, date, organiser and location`,
       );
+    }
+    if (!eventTypes.has(event.eventType)) {
+      throw new ValidationError(`events[${eventIndex}] has an unsupported event type`);
+    }
+    if (!eventStatuses.has(event.status)) {
+      throw new ValidationError(`events[${eventIndex}] has an unsupported status`);
     }
 
     const duplicateKey = `${event.name.toLocaleLowerCase()}\u0000${event.date}`;
@@ -80,16 +110,19 @@ export function normalizeEvents(input) {
           `events[${eventIndex}].sessions[${sessionIndex}].id`,
         ),
         name: text(rawSession.name),
-        time: text(rawSession.time),
+        startMinutes: minutesAfterMidnight(
+          rawSession.startMinutes,
+          `events[${eventIndex}].sessions[${sessionIndex}].startMinutes`,
+        ),
         speaker: text(rawSession.speaker),
         room: text(rawSession.room),
         type: text(rawSession.type),
         description: text(rawSession.description),
         updatedAt: timestamp(rawSession.updatedAt),
       };
-      if (!session.name || !session.time) {
+      if (!session.name) {
         throw new ValidationError(
-          `events[${eventIndex}].sessions[${sessionIndex}] requires name and time`,
+          `events[${eventIndex}].sessions[${sessionIndex}] requires a name`,
         );
       }
       if (!sessionTypes.has(session.type)) {
@@ -105,7 +138,7 @@ export function normalizeEvents(input) {
       sessionIds.add(session.id);
       return session;
     });
-    event.sessions.sort((a, b) => a.time.localeCompare(b.time) || a.name.localeCompare(b.name));
+    event.sessions.sort((a, b) => a.startMinutes - b.startMinutes || a.name.localeCompare(b.name));
     return event;
   });
 }

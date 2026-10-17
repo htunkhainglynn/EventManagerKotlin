@@ -15,7 +15,12 @@ import com.example.eventmanager.data.EventEntity
 import com.example.eventmanager.data.EventRepository
 import com.example.eventmanager.data.EventWithSessionCount
 import com.example.eventmanager.data.SessionEntity
+import com.example.eventmanager.model.EventStatus
+import com.example.eventmanager.model.EventType
+import com.example.eventmanager.model.SessionType
 import com.example.eventmanager.sync.CloudUploadWorker
+import java.time.LocalDate
+import java.time.LocalTime
 import java.util.UUID
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -31,9 +36,11 @@ import kotlinx.coroutines.launch
 data class EventDraft(
     val id: Long = 0,
     val name: String = "",
-    val date: String = "",
+    val date: LocalDate? = null,
     val organiser: String = "",
     val location: String = "",
+    val eventType: EventType = EventType.Conference,
+    val status: EventStatus = EventStatus.Upcoming,
     val description: String = "",
     val contactEmail: String = "",
     val contactPhone: String = ""
@@ -41,9 +48,11 @@ data class EventDraft(
     fun toEntity() = EventEntity(
         id = id,
         name = name,
-        date = date,
+        date = requireNotNull(date),
         organiser = organiser,
         location = location,
+        eventType = eventType,
+        status = status,
         description = description,
         contactEmail = contactEmail,
         contactPhone = contactPhone
@@ -54,17 +63,17 @@ data class SessionDraft(
     val id: Long = 0,
     val eventId: Long,
     val name: String = "",
-    val time: String = "",
+    val time: LocalTime? = null,
     val speaker: String = "",
     val room: String = "",
-    val type: String = "Presentation",
+    val type: SessionType = SessionType.Presentation,
     val description: String = ""
 ) {
     fun toEntity() = SessionEntity(
         id = id,
         eventId = eventId,
         name = name,
-        time = time,
+        time = requireNotNull(time),
         speaker = speaker,
         room = room,
         type = type,
@@ -78,7 +87,7 @@ class EventManagerViewModel(
     private val repository: EventRepository
 ) : AndroidViewModel(application) {
     val searchQuery = MutableStateFlow("")
-    val dateFilter = MutableStateFlow("")
+    val dateFilter = MutableStateFlow<LocalDate?>(null)
     val organiserFilter = MutableStateFlow("")
     val sessionSearchQuery = MutableStateFlow("")
     private val selectedEventId = MutableStateFlow(0L)
@@ -114,7 +123,8 @@ class EventManagerViewModel(
 
     fun checkDuplicate(draft: EventDraft, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            onResult(repository.hasDuplicate(draft.name, draft.date, draft.id))
+            val date = draft.date
+            onResult(date != null && repository.hasDuplicate(draft.name, date, draft.id))
         }
     }
 

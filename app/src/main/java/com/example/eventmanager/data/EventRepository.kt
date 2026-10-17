@@ -1,10 +1,11 @@
 package com.example.eventmanager.data
 
+import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
 
 class EventRepository(private val database: EventManagerDatabase) {
-    fun observeEvents(query: String, date: String, organiser: String): Flow<List<EventWithSessionCount>> =
-        database.eventDao().observeEvents(query.trim(), date.trim(), organiser.trim())
+    fun observeEvents(query: String, date: LocalDate?, organiser: String): Flow<List<EventWithSessionCount>> =
+        database.eventDao().observeEvents(query.trim(), date, organiser.trim())
 
     fun observeEvent(id: Long): Flow<EventEntity?> = database.eventDao().observeEvent(id)
 
@@ -15,13 +16,12 @@ class EventRepository(private val database: EventManagerDatabase) {
 
     suspend fun getSession(id: Long): SessionEntity? = database.sessionDao().getSession(id)
 
-    suspend fun hasDuplicate(name: String, date: String, excludeId: Long = 0): Boolean =
-        database.eventDao().duplicateCount(name.trim(), date.trim(), excludeId) > 0
+    suspend fun hasDuplicate(name: String, date: LocalDate, excludeId: Long = 0): Boolean =
+        database.eventDao().duplicateCount(name.trim(), date, excludeId) > 0
 
     suspend fun saveEvent(event: EventEntity): Long {
         val fresh = event.copy(
             name = event.name.trim(),
-            date = event.date.trim(),
             organiser = event.organiser.trim(),
             location = event.location.trim(),
             description = event.description.trim(),
@@ -42,7 +42,6 @@ class EventRepository(private val database: EventManagerDatabase) {
     suspend fun saveSession(session: SessionEntity): Long {
         val fresh = session.copy(
             name = session.name.trim(),
-            time = session.time.trim(),
             speaker = session.speaker.trim(),
             room = session.room.trim(),
             description = session.description.trim(),

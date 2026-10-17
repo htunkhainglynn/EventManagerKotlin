@@ -9,9 +9,11 @@ import { createEventServer } from "../src/server.mjs";
 const example = {
   id: 7,
   name: "Greenwich Mobile Conference",
-  date: "18/11/2026",
+  date: "2026-11-18",
   organiser: "Computing Society",
   location: "Greenwich Campus",
+  eventType: "Conference",
+  status: "Upcoming",
   description: "Mobile development sessions",
   contactEmail: "events@example.org",
   contactPhone: "+44 20 8331 8000",
@@ -20,7 +22,7 @@ const example = {
     {
       id: 3,
       name: "Opening Keynote",
-      time: "09:30",
+      startMinutes: 570,
       speaker: "Dr Maya Chen",
       room: "QA 180",
       type: "Keynote",
@@ -59,14 +61,37 @@ test("admin sync persists events and public search returns them", async (context
   assert.equal(synced.status, 200);
   assert.equal((await synced.json()).eventCount, 1);
 
-  const searched = await fetch(`${baseUrl}/api/events?name=green&date=18%2F11%2F2026`);
+  const searched = await fetch(`${baseUrl}/api/events?name=green&date=2026-11-18`);
   assert.equal(searched.status, 200);
   const result = await searched.json();
   assert.equal(result.events.length, 1);
   assert.equal(result.events[0].sessions[0].name, "Opening Keynote");
+  assert.equal(result.events[0].sessions[0].startMinutes, 570);
 
   const persisted = JSON.parse(await readFile(dataFile, "utf8"));
   assert.equal(persisted.events[0].name, example.name);
+});
+
+test("invalid calendar dates and session minutes are rejected", async (context) => {
+  const { server, baseUrl } = await fixture();
+  context.after(() => server.close());
+  const headers = { "Content-Type": "application/json", "X-Admin-Key": "test-key" };
+
+  const invalidDate = await fetch(`${baseUrl}/api/events`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ events: [{ ...example, date: "2026-02-31" }] }),
+  });
+  assert.equal(invalidDate.status, 400);
+
+  const invalidTime = await fetch(`${baseUrl}/api/events`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({
+      events: [{ ...example, sessions: [{ ...example.sessions[0], startMinutes: 1440 }] }],
+    }),
+  });
+  assert.equal(invalidTime.status, 400);
 });
 
 test("a later full sync removes deleted events", async (context) => {

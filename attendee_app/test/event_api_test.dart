@@ -7,9 +7,9 @@ void main() {
   test('API sends name/date search and parses events', () async {
     final client = MockClient((request) async {
       expect(request.url.queryParameters['name'], 'Greenwich');
-      expect(request.url.queryParameters['date'], '18/11/2026');
+      expect(request.url.queryParameters['date'], '2026-11-18');
       return http.Response(
-        '''{"events":[{"id":1,"name":"Greenwich Mobile Conference","date":"18/11/2026","organiser":"Computing Society","location":"Greenwich Campus","description":"","contactEmail":"","contactPhone":"","sessions":[]}]}''',
+        '''{"events":[{"id":1,"name":"Greenwich Mobile Conference","date":"2026-11-18","organiser":"Computing Society","location":"Greenwich Campus","eventType":"Conference","status":"Upcoming","description":"","contactEmail":"","contactPhone":"","sessions":[]}]}''',
         200,
       );
     });
@@ -18,7 +18,7 @@ void main() {
 
     final events = await api.fetchEvents(
       name: ' Greenwich ',
-      date: '18/11/2026',
+      date: DateTime(2026, 11, 18),
     );
 
     expect(events, hasLength(1));

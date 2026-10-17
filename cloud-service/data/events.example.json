@@ -3,9 +3,11 @@
     {
       "id": 1,
       "name": "Greenwich Mobile Conference",
-      "date": "18/11/2026",
+      "date": "2026-11-18",
       "organiser": "Computing Society",
       "location": "Greenwich Campus",
+      "eventType": "Conference",
+      "status": "Upcoming",
       "description": "A one-day conference about native and cross-platform mobile development.",
       "contactEmail": "events@example.org",
       "contactPhone": "+44 20 8331 8000",
@@ -14,7 +16,7 @@
         {
           "id": 1,
           "name": "Opening Keynote",
-          "time": "09:30",
+          "startMinutes": 570,
           "speaker": "Dr Maya Chen",
           "room": "QA 180",
           "type": "Keynote",

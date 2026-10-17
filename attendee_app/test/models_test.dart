@@ -6,9 +6,11 @@ void main() {
     final event = EventInfo.fromJson({
       'id': 1,
       'name': 'Greenwich Mobile Conference',
-      'date': '18/11/2026',
+      'date': '2026-11-18',
       'organiser': 'Computing Society',
       'location': 'Greenwich Campus',
+      'eventType': 'Conference',
+      'status': 'Upcoming',
       'description': 'Mobile development sessions',
       'contactEmail': 'events@example.org',
       'contactPhone': '+44 20 8331 8000',
@@ -16,7 +18,7 @@ void main() {
         {
           'id': 2,
           'name': 'Opening Keynote',
-          'time': '09:30',
+          'startMinutes': 570,
           'speaker': 'Dr Maya Chen',
           'room': 'QA 180',
           'type': 'Keynote',
@@ -26,7 +28,10 @@ void main() {
     });
 
     expect(event.name, 'Greenwich Mobile Conference');
+    expect(event.formattedDate, '18/11/2026');
+    expect(event.eventType, 'Conference');
     expect(event.sessions, hasLength(1));
     expect(event.sessions.single.type, 'Keynote');
+    expect(event.sessions.single.formattedTime, '09:30');
   });
 }

@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.eventmanager.data.EventEntity
 import com.example.eventmanager.data.SessionEntity
+import com.example.eventmanager.model.EventDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -210,7 +211,15 @@ private fun EventSummary(event: EventEntity) {
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(event.name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-            Text("${event.date} • ${event.location}", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "${EventDateTime.displayDate(event.date)} • ${event.location}",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                "${event.eventType.label} • ${event.status.label}",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
             Text("Organised by ${event.organiser}")
             if (event.description.isNotBlank()) {
                 HorizontalDivider(color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = .18f))
@@ -245,14 +254,18 @@ private fun SessionCard(session: SessionEntity, onEdit: () -> Unit, onDelete: ()
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(session.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Text(session.type, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+                    Text(
+                        session.type.label,
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelLarge
+                    )
                 }
                 IconButton(onClick = onDelete) {
                     Icon(Icons.Default.Delete, contentDescription = "Delete ${session.name}")
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                DetailLine(Icons.Default.Schedule, session.time)
+                DetailLine(Icons.Default.Schedule, EventDateTime.displayTime(session.time))
                 if (session.room.isNotBlank()) Text("Room ${session.room}")
             }
             if (session.speaker.isNotBlank()) Text("Speaker: ${session.speaker}")
@@ -267,13 +280,16 @@ private fun SessionCard(session: SessionEntity, onEdit: () -> Unit, onDelete: ()
 
 private fun buildSchedule(event: EventEntity, sessions: List<SessionEntity>): String = buildString {
     appendLine(event.name)
-    appendLine("${event.date} • ${event.location}")
+    appendLine("${EventDateTime.displayDate(event.date)} • ${event.location}")
     appendLine("Organiser: ${event.organiser}")
+    appendLine("${event.eventType.label} • ${event.status.label}")
     appendLine()
     appendLine("Schedule")
     if (sessions.isEmpty()) appendLine("No sessions added.")
     sessions.forEach { session ->
-        append("${session.time} — ${session.name} (${session.type})")
+        append(
+            "${EventDateTime.displayTime(session.time)} — ${session.name} (${session.type.label})"
+        )
         if (session.room.isNotBlank()) append(" • Room ${session.room}")
         if (session.speaker.isNotBlank()) append(" • ${session.speaker}")
         appendLine()

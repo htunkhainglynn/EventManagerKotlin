@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.work.WorkInfo
 import com.example.eventmanager.data.EventWithSessionCount
+import com.example.eventmanager.model.EventDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,13 +130,11 @@ fun EventListScreen(
                 Column {
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(
+                        DatePickerField(
                             value = date,
                             onValueChange = { viewModel.dateFilter.value = it },
                             modifier = Modifier.weight(1f),
-                            label = { Text("Date") },
-                            placeholder = { Text("DD/MM/YYYY") },
-                            singleLine = true
+                            label = "Date"
                         )
                         OutlinedTextField(
                             value = organiser,
@@ -149,7 +148,7 @@ fun EventListScreen(
             }
             Spacer(Modifier.height(12.dp))
             if (events.isEmpty()) {
-                EmptyEvents(hasSearch = query.isNotBlank() || date.isNotBlank() || organiser.isNotBlank())
+                EmptyEvents(hasSearch = query.isNotBlank() || date != null || organiser.isNotBlank())
             } else {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -188,8 +187,13 @@ private fun EventCard(item: EventWithSessionCount, onClick: () -> Unit) {
                 )
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Text(
+                "${item.event.eventType.label} • ${item.event.status.label}",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmallFact(Icons.Default.DateRange, item.event.date)
+                SmallFact(Icons.Default.DateRange, EventDateTime.displayDate(item.event.date))
                 SmallFact(Icons.Default.LocationOn, item.event.location)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
