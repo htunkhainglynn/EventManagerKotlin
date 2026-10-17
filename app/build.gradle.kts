@@ -5,6 +5,10 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
 }
 
+val eventApiUrl = providers.gradleProperty("EVENT_API_URL")
+    .orElse("http://10.0.2.2:8080/api/events")
+val eventApiKey = providers.gradleProperty("EVENT_API_KEY").orElse("")
+
 android {
     namespace = "com.example.eventmanager"
     compileSdk = 35
@@ -19,8 +23,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 
-        // Replace this with the coursework cloud service endpoint when it is available.
-        buildConfigField("String", "UPLOAD_ENDPOINT", "\"https://httpbin.org/post\"")
+        buildConfigField("String", "EVENT_API_URL", "\"${eventApiUrl.get()}\"")
+        buildConfigField("String", "EVENT_API_KEY", "\"${eventApiKey.get()}\"")
     }
 
     buildFeatures {

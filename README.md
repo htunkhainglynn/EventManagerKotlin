@@ -1,53 +1,83 @@
-# Event Manager Kotlin
+# COMP1786 Event Manager coursework
 
-Native Android implementation of the COMP1786 CW2 Event Manager admin app. It is written in Kotlin with Jetpack Compose and stores data locally with Room (SQLite). This project also includes a separate Java BMI Calculator app for Exercise 1.
+This repository contains the complete runnable coursework implementation: a native Kotlin Android administration app, a persistent shared web service, a Flutter hybrid attendee app, and the separate Exercise 1 Java BMI Calculator.
 
-## Implemented features
+See [`COURSEWORK_FEATURES.md`](COURSEWORK_FEATURES.md) for the A-H requirement mapping.
 
-- Create, review, edit, list, and delete events.
-- Required-field validation plus strict `DD/MM/YYYY`, email, and phone validation.
-- Duplicate event prevention using the combination of event name and date.
-- Create, edit, search, and delete multiple sessions for each event.
-- Automatic session IDs and the required session type choices.
-- Event-to-session relationship with cascade deletion and a session count.
-- Event search by name or description and advanced filtering by date or organiser.
-- Session search by name or description.
-- Network-aware background upload of all events and sessions as JSON.
-- Shareable plain-text event schedule as an additional feature.
-- Light and dark themes with a responsive Compose interface.
+## 1. Start the shared service
 
-## Open and run
-
-1. Open this `EventManagerKotlin` folder in Android Studio.
-2. Let Android Studio install Android SDK 35 and sync the Gradle project.
-3. Select an emulator or an Android device running Android 8.0 (API 26) or newer.
-4. Run the `app` configuration for Event Manager, or `bmiapp` for the Exercise 1 BMI Calculator.
-
-From a terminal with `ANDROID_HOME` configured, use:
+Node.js 22 or newer is recommended. The service has no third-party runtime packages.
 
 ```text
-./gradlew testDebugUnitTest
-./gradlew assembleDebug
+cd cloud-service
+npm test
+npm start
 ```
 
-The Event Manager debug APK is generated at `app/build/outputs/apk/debug/app-debug.apk`. The BMI Calculator APK is generated at `bmiapp/build/outputs/apk/debug/bmiapp-debug.apk`.
+It starts at `http://localhost:8080`, persists records in `cloud-service/data/events.json`, and provides:
 
-## Exercise 1 BMI Calculator
+- `GET /health`
+- `GET /api/events?name=&date=`
+- `PUT /api/events`
 
-The `bmiapp` module installs as a separate app. It accepts kilograms or pounds for weight and centimetres or metres for height, validates both values against reasonable ranges, calculates BMI, and shows the adult BMI category in both words and colour. The Java calculation class is unit-tested separately from the screen. On a borrowed computer, select the `bmiapp` run configuration, then capture screenshots of valid results in each unit and invalid-input messages for the Exercise 1 logbook.
+Optionally set `ADMIN_API_KEY` to protect writes. A Dockerfile is included for hosted deployment; mount durable storage at `/app/data` and use HTTPS in production.
 
-## Cloud endpoint
+## 2. Run the native Kotlin admin app
 
-The project uses `https://httpbin.org/post` as a safe demonstration endpoint, so the upload path can be run immediately and its HTTP behavior can be demonstrated. It accepts the JSON but does not persist it.
+Open the repository root in Android Studio, let Gradle sync, then run the `app` configuration on Android 8.0 (API 26) or newer. The emulator connects to the local service through `http://10.0.2.2:8080/api/events`.
 
-For the final coursework cloud database, replace `UPLOAD_ENDPOINT` in `app/build.gradle.kts` with the POST endpoint supplied by your own service. The complete payload contains an `events` array, and each event contains its nested `sessions` array. Successful uploads record a local sync timestamp; any later event or session change marks the event as waiting to upload again.
+For a hosted service, put these settings in your user `~/.gradle/gradle.properties` (do not commit the secret):
 
-## Project structure
+```text
+EVENT_API_URL=https://your-service.example/api/events
+EVENT_API_KEY=your-secret-key
+```
 
-- `data/` contains Room entities, DAOs, the database, and repository.
-- `model/Validation.kt` contains reusable validation rules.
-- `sync/CloudUploadWorker.kt` performs the background upload.
-- `ui/` contains the Compose screens, navigation, and view model.
-- `app/src/test/` contains local validation tests.
+Command-line verification:
 
-No report or PDF is included in this project.
+```text
+./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+```
+
+The APK is created at `app/build/outputs/apk/debug/app-debug.apk`.
+
+## 3. Run the Flutter attendee app
+
+```text
+cd attendee_app
+flutter pub get
+flutter run
+```
+
+Android emulators use `10.0.2.2`; iOS simulators and web use `localhost`. Override the service for a device or hosted build:
+
+```text
+flutter run --dart-define=EVENT_API_URL=https://your-service.example/api/events
+```
+
+Verification:
+
+```text
+flutter analyze
+flutter test --platform chrome
+flutter build web
+```
+
+## 4. Run the Exercise 1 BMI Calculator
+
+Select the `bmiapp` Android Studio run configuration. It validates kilograms/pounds and centimetres/metres, calculates the adult BMI category, and displays the result in words and colour.
+
+```text
+./gradlew :bmiapp:testDebugUnitTest :bmiapp:assembleDebug
+```
+
+The APK is created at `bmiapp/build/outputs/apk/debug/bmiapp-debug.apk`.
+
+## Main technologies
+
+- Kotlin, Jetpack Compose, Room (SQLite), WorkManager
+- Node.js HTTP service with atomic JSON-file persistence
+- Flutter/Dart, Material 3, HTTP, shared preferences
+- Java Android Views for the BMI exercise
+
+No coursework report or generated PDF is included in this repository.

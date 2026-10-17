@@ -119,31 +119,45 @@ class EventManagerViewModel(
     }
 
     fun saveEvent(draft: EventDraft, onSaved: (Long) -> Unit) {
-        viewModelScope.launch { onSaved(repository.saveEvent(draft.toEntity())) }
+        viewModelScope.launch {
+            onSaved(repository.saveEvent(draft.toEntity()))
+            enqueueUpload(observeStatus = false)
+        }
     }
 
     fun deleteEvent(event: EventEntity, onDeleted: () -> Unit = {}) {
         viewModelScope.launch {
             repository.deleteEvent(event)
             onDeleted()
+            enqueueUpload(observeStatus = false)
         }
     }
 
     fun saveSession(draft: SessionDraft, onSaved: (Long) -> Unit) {
-        viewModelScope.launch { onSaved(repository.saveSession(draft.toEntity())) }
+        viewModelScope.launch {
+            onSaved(repository.saveSession(draft.toEntity()))
+            enqueueUpload(observeStatus = false)
+        }
     }
 
     fun deleteSession(session: SessionEntity) {
-        viewModelScope.launch { repository.deleteSession(session) }
+        viewModelScope.launch {
+            repository.deleteSession(session)
+            enqueueUpload(observeStatus = false)
+        }
     }
 
     fun uploadAll() {
+        enqueueUpload(observeStatus = true)
+    }
+
+    private fun enqueueUpload(observeStatus: Boolean) {
         val request = OneTimeWorkRequestBuilder<CloudUploadWorker>()
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
             .build()
         val manager = WorkManager.getInstance(getApplication())
         manager.enqueueUniqueWork("upload-all-events", ExistingWorkPolicy.REPLACE, request)
-        observeWork(manager, request.id)
+        if (observeStatus) observeWork(manager, request.id)
     }
 
     private fun observeWork(manager: WorkManager, id: UUID) {

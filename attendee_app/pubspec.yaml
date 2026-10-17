@@ -1,0 +1,21 @@
+name: event_attendee
+description: "Hybrid attendee app for the COMP1786 Event Manager coursework."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.6.0
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

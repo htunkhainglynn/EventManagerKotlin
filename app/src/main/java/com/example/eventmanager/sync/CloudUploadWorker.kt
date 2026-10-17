@@ -25,10 +25,6 @@ class CloudUploadWorker(
         val database = EventManagerDatabase.getInstance(applicationContext)
         val events = database.eventDao().getAllEvents()
         val sessions = database.sessionDao().getAllSessions()
-        if (events.isEmpty()) {
-            return@withContext Result.success(output("No events to upload"))
-        }
-
         val payload = JSONObject().apply {
             put("uploadedAt", System.currentTimeMillis())
             put("events", JSONArray().apply {
@@ -62,12 +58,18 @@ class CloudUploadWorker(
             })
         }
 
-        runCatching { postJson(BuildConfig.UPLOAD_ENDPOINT, payload.toString()) }
+        runCatching { putJson(BuildConfig.EVENT_API_URL, payload.toString()) }
             .fold(
-                onSuccess = { statusCode ->
+                onSuccess = { response ->
+                    val (statusCode, responseBody) = response
                     if (statusCode in 200..299) {
-                        database.eventDao().markSynced(events.map { it.id }, System.currentTimeMillis())
-                        Result.success(output("Uploaded ${events.size} event(s)"))
+                        if (events.isNotEmpty()) {
+                            database.eventDao().markSynced(events.map { it.id }, System.currentTimeMillis())
+                        }
+                        val serverMessage = runCatching {
+                            JSONObject(responseBody).optString("message")
+                        }.getOrDefault("")
+                        Result.success(output(serverMessage.ifBlank { "Synchronised ${events.size} event(s)" }))
                     } else if (statusCode in 500..599) {
                         Result.retry()
                     } else {
@@ -86,18 +88,23 @@ class CloudUploadWorker(
             capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
     }
 
-    private fun postJson(endpoint: String, json: String): Int {
+    private fun putJson(endpoint: String, json: String): Pair<Int, String> {
         val connection = (URL(endpoint).openConnection() as HttpURLConnection).apply {
-            requestMethod = "POST"
+            requestMethod = "PUT"
             connectTimeout = 15_000
             readTimeout = 15_000
             doOutput = true
             setRequestProperty("Content-Type", "application/json; charset=utf-8")
             setRequestProperty("Accept", "application/json")
+            if (BuildConfig.EVENT_API_KEY.isNotBlank()) {
+                setRequestProperty("X-Admin-Key", BuildConfig.EVENT_API_KEY)
+            }
         }
         return try {
             connection.outputStream.bufferedWriter(Charsets.UTF_8).use { it.write(json) }
-            connection.responseCode
+            val statusCode = connection.responseCode
+            val stream = if (statusCode in 200..299) connection.inputStream else connection.errorStream
+            statusCode to (stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() } ?: "")
         } finally {
             connection.disconnect()
         }
