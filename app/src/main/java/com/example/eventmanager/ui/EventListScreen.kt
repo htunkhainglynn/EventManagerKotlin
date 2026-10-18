@@ -187,11 +187,23 @@ private fun EventCard(item: EventWithSessionCount, onClick: () -> Unit) {
                 )
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            Text(
-                "${item.event.eventType.label} • ${item.event.status.label}",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    "Type: ${item.event.eventType.label}",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    "Status: ${item.event.status.label}",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 SmallFact(Icons.Default.DateRange, EventDateTime.displayDate(item.event.date))
                 SmallFact(Icons.Default.LocationOn, item.event.location)

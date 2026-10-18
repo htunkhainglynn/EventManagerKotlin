@@ -338,8 +338,8 @@ class _EventCard extends StatelessWidget {
               _Fact(icon: Icons.calendar_month, text: event.formattedDate),
               _Fact(icon: Icons.location_on, text: event.location),
               _Fact(icon: Icons.groups, text: event.organiser),
-              _Fact(icon: Icons.category, text: event.eventType),
-              _Fact(icon: Icons.flag, text: event.status),
+              _Fact(icon: Icons.category, text: 'Type: ${event.eventType}'),
+              _Fact(icon: Icons.flag, text: 'Status: ${event.status}'),
               const SizedBox(height: 8),
               Text(
                   '${event.sessions.length} session${event.sessions.length == 1 ? '' : 's'}'),
@@ -408,8 +408,8 @@ class _EventDetailPageState extends State<EventDetailPage> {
                   _Fact(
                       icon: Icons.groups,
                       text: 'Organised by ${event.organiser}'),
-                  _Fact(icon: Icons.category, text: event.eventType),
-                  _Fact(icon: Icons.flag, text: event.status),
+                  _Fact(icon: Icons.category, text: 'Type: ${event.eventType}'),
+                  _Fact(icon: Icons.flag, text: 'Status: ${event.status}'),
                   if (event.description.isNotEmpty) ...[
                     const Divider(),
                     Text(event.description),
