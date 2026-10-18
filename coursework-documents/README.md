@@ -11,13 +11,13 @@ This folder contains the editable Word outputs prepared from the official 2026�
 
 Use this house style for every coursework document in this project:
 
-- Arial throughout headings, body text, tables, captions, headers, and footers; editable code listings use Courier New with generous spacing, no background fill, and single line spacing.
+- Arial throughout headings, body text, tables and captions; editable code listings use Courier New with generous spacing, no background fill, and single line spacing. Headers and footers are intentionally blank.
 - Black text throughout.
 - 16 pt document title, 14 pt main headings, 12 pt subheadings, and 11 pt body text and supporting content.
 - 1.5 line spacing for normal document content; code listings use single line spacing.
 
 The supplied official report template and the CW1 Part B reference report determine the document structure; the style above overrides their typography where they differ.
 
-The A–H report checklist is fully ticked, the written reflection is 364 words, the evaluation is 867 words, and the report includes the complete labelled source listing, five verified BMI screenshots, and two verified Flutter screenshots.
+The A–H report checklist is fully ticked, the written reflection is 364 words, the evaluation is 867 words, and the report includes the complete labelled source listing, five verified BMI screenshots, and five verified Flutter screenshots.
 
-The Exercise 1 BMI logbook contains genuine Android evidence for valid centimetres, metres and pounds calculations plus missing-input and range validation. The Exercise 2 and Exercise 3 logbooks now contain genuine native Event Manager screenshots. The main report includes thirteen verified native Event Manager screenshots, five Flutter attendee screenshots and five BMI screenshots. Before submission, capture Android's share chooser for the generated schedule and replace the one remaining yellow panel. Add the missing student ID and Panopto video URL. Confirm with the module tutor that Kotlin is accepted for the native app because the official brief names Java. No final coursework PDF is included.
+The Exercise 1 BMI logbook contains genuine Android evidence for valid centimetres, metres and pounds calculations plus missing-input and range validation. The Exercise 2 and Exercise 3 logbooks contain genuine native Event Manager screenshots. Every coursework screenshot is presented on its own page, all yellow background panels have been removed, and student ID 001557481 is included. Before submission, capture Android's share chooser for the generated schedule and add the Panopto video URL. Confirm with the module tutor that Kotlin is accepted for the native app because the official brief names Java. No final coursework PDF is included.
