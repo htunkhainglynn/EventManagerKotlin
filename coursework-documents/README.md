@@ -18,6 +18,6 @@ Use this house style for every coursework document in this project:
 
 The supplied official report template and the CW1 Part B reference report determine the document structure; the style above overrides their typography where they differ.
 
-The A–H report checklist is fully ticked, the written reflection is 364 words, the evaluation is 867 words, and the report includes the complete labelled source listing plus two verified Flutter screenshots.
+The A–H report checklist is fully ticked, the written reflection is 364 words, the evaluation is 867 words, and the report includes the complete labelled source listing, five verified BMI screenshots, and two verified Flutter screenshots.
 
-Before submission, replace every yellow native-screenshot panel with a genuine screenshot from an Android device or emulator. Add the missing student ID and Panopto video URL. Confirm with the module tutor that Kotlin is accepted for the native app because the official brief names Java. No final coursework PDF is included.
+The Exercise 1 BMI logbook now contains genuine Android evidence for valid centimetres, metres and pounds calculations plus missing-input and range validation. Before submission, replace every remaining yellow Event Manager screenshot panel with a genuine screenshot from an Android device or emulator. Add the missing student ID and Panopto video URL. Confirm with the module tutor that Kotlin is accepted for the native app because the official brief names Java. No final coursework PDF is included.
