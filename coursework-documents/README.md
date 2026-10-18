@@ -11,10 +11,10 @@ This folder contains the editable Word outputs prepared from the official 2026â€
 
 Use this house style for every coursework document in this project:
 
-- Arial throughout headings, body text, tables, captions, headers, and footers; editable code listings use Courier New with generous padding and light-grey backgrounds.
+- Arial throughout headings, body text, tables, captions, headers, and footers; editable code listings use Courier New with generous spacing, no background fill, and single line spacing.
 - Black text throughout.
 - 16 pt document title, 14 pt main headings, 12 pt subheadings, and 11 pt body text and supporting content.
-- 1.5 line spacing throughout.
+- 1.5 line spacing for normal document content; code listings use single line spacing.
 
 The supplied official report template and the CW1 Part B reference report determine the document structure; the style above overrides their typography where they differ.
 
